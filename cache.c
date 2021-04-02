@@ -63,7 +63,7 @@ int cache_answer(void *_buf, uint16_t n)
 				{
 					ptr->star_a_n1 = star_ptr - (char*)ptr->ans;
 					ptr->star_a_n2 = n - ptr->star_a_n1 - 2;
-					if (ptr->ans_right = (uint16_t*)malloc(ptr->star_a_n2))
+					if ( (ptr->ans_right = (uint16_t*)malloc(ptr->star_a_n2)) )
 						memcpy(ptr->ans_right, (char*)ptr->ans + ptr->star_a_n1 + 2, ptr->star_a_n2);
 					break;
 				}
@@ -106,7 +106,7 @@ void* cache_search(void *_buf, uint16_t *n)
 			continue;
 		}
 
-		if (ptr->ans)
+		if (ptr->ans){
 		if (ptr->star_q_n1 > 0)
 		{
 			int16_t mid_sz = *n - ptr->star_q_n1 - ptr->star_q_n2; // size of middle
@@ -133,6 +133,7 @@ void* cache_search(void *_buf, uint16_t *n)
 		}
 		ptr_prev = ptr;
 		ptr = ptr->next;
+		}
 	}
 	return NULL;
 }

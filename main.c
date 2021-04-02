@@ -17,7 +17,8 @@ void loop(int sockfd)
 	uint16_t *ans = NULL;
 
 	int                 in_addr_len;
-	struct sockaddr_in6 in_addr;
+	struct sockaddr_in in_addr;
+	//struct sockaddr_in6 in_addr;
 
 	int                out_socket;
 	int                out_addr_len;
@@ -58,7 +59,7 @@ void loop(int sockfd)
 
 		log_b("Q-->", buf, n);
 
-		if (ans = (uint16_t *)cache_search(buf, &n))
+		if ( (ans = (uint16_t *)cache_search(buf, &n)) )
 		{
 			ans[0] = id;
 			log_b("<--C", ans, n);
@@ -114,6 +115,7 @@ int hostname_to_ip(char *hostname, char *ip, int len)
 
 	for (p = servinfo; p != NULL; p = p->ai_next)
 	{
+#ifdef IPV6
 		if (p->ai_family == AF_INET6)
 		{
 			struct sockaddr_in6 *serveraddr = (struct sockaddr_in6 *)p->ai_addr;
@@ -121,6 +123,7 @@ int hostname_to_ip(char *hostname, char *ip, int len)
 			break;
 		}
 		else
+#endif
 		if (p->ai_family == AF_INET)
 		{
 			struct sockaddr_in *serveraddr = (struct sockaddr_in *)p->ai_addr;
@@ -157,6 +160,7 @@ int server_init()
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(optval));
 
 	// bind
+#ifdef IPV6
 	if (is_ipv6)
 	{
 		struct sockaddr_in6 serveraddr;  /* server's addr */
@@ -168,6 +172,7 @@ int server_init()
 			error("ERROR on binding ipv6");
 	}
 	else
+#endif
 	{
 		struct sockaddr_in serveraddr;  /* server's addr */
 		memset((char *) &serveraddr, 0, sizeof(serveraddr));

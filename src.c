@@ -1,0 +1,6 @@
+#include "cache.c"
+#include "config.c"
+#include "help.c"
+#include "log.c"
+#include "parse.c"
+#include "main.c"

@@ -1,3 +1,6 @@
+#ifndef cache_h
+#define cache_h
+
 typedef struct TCacheItem
 {
 	struct TCacheItem *next;
@@ -17,3 +20,5 @@ typedef struct TCacheItem
 int   cache_answer(void *_buf, uint16_t n);
 void* cache_question(void *buf, uint16_t n);
 void* cache_search(void *_buf, uint16_t *n);
+
+#endif

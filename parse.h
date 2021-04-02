@@ -1,3 +1,6 @@
+#ifndef parse_h
+#define parse_h
+
 #include <arpa/inet.h> // for uint16_t
 
 #define OPCODE_STANDART     0
@@ -67,3 +70,7 @@ typedef struct __attribute__((__packed__))
 } THeader;
 
 void parse_buf(THeader *buf);
+
+
+#endif
+

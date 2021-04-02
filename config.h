@@ -1,3 +1,6 @@
+#ifndef config_h
+#define config_h
+
 #include <stdlib.h>
 
 #define CONFIG_TYPE_STRING 1
@@ -18,3 +21,5 @@ typedef struct TConfig
 extern TConfig config;
 
 void config_load();
+
+#endif

@@ -1,6 +1,6 @@
 #include "common.h"
 
-TConfig config = {"127.0.0.1", 53, "8.8.8.8", 53, 6*3600};
+TConfig config = {"127.0.0.1", 53, "1.1.1.1", 53, 6*3600};
 
 char rr_buf[0xFFF] = {0};
 
@@ -8,7 +8,7 @@ char* config_param(char* s, void* res, unsigned int type)
 {
 	THeader *rr = (THeader*)rr_buf; rr->QRCOUNT = htons(1);
 	char   *rr_ptr, *rr_dot;
-	int state = 1, x, rr_size, rr_uid = 1;
+	int state = 1, x = 0, rr_size, rr_uid = 1;
 	if (type == CONFIG_TYPE_RR) state = 6;
 	while (*s)
 	{
@@ -18,7 +18,16 @@ char* config_param(char* s, void* res, unsigned int type)
 			case 2: if (*s == '"') { state = 3; *(char**)res = s+1; } break;
 			case 3: if (*s == '"') { state = 4; *s = 0; }             break;
 			case 4: return s;
-			case 5: if (*s >= '0' && *s <= '9') { state = 4; sscanf(s, "%d", &x); *(int*)res = x; return(s); } break;
+			case 5: if (*s >= '0' && *s <= '9') { 
+									//sscanf(s, "%d", &x); 									
+									do{
+											x = x*10 + (*s-'0');
+											s++;
+									} while ( *s>='0' && *s<='9' );
+									*(int*)res = x; 
+									return(s); 
+							} 
+							break;
 			// add query/answer from config
 			case 6: if (*s == ']') state = 4; if (*s == '"') { state = 7; rr_ptr = rr_dot = s; x = 0; } break;
 			case 7:

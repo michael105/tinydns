@@ -2,6 +2,10 @@ ifndef CC
 CC=gcc
 endif
 
+
+FEATURES=
+# FEATURES=-DIPV6 -DNETDB
+
 CFLAGS=-Os -s -static
 
 tinydns: *.c

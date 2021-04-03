@@ -4,9 +4,8 @@
 
 #define DNS_PORT 53
 
-char version[] = "0.3.1";
+#define version "0.3.1"
 
-unsigned char buf[0xFFF];
 
 void error(char *msg) { log_s(msg); perror(msg); exit(1); }
 
@@ -15,9 +14,12 @@ void loop(int sockfd)
 	 int16_t  i, n;
 	uint16_t  id;
 	uint16_t *ans = NULL;
+	unsigned char buf[0xFFF];
 
-	int                 in_addr_len;
-	struct sockaddr_in in_addr;
+	int                 inaddr_len;
+	struct sockaddr_in inaddr;
+	inaddr.sin_addr.s_addr=255;
+	inaddr.sin_port=255;
 	//struct sockaddr_in6 in_addr;
 
 	int                out_socket;
@@ -35,9 +37,12 @@ void loop(int sockfd)
 	{
 		memset(buf, 0, sizeof(buf));
 
+		log_s("Listening\n");
 		// receive datagram
-		in_addr_len = sizeof(in_addr);
-		n = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *) &in_addr, &in_addr_len);
+		inaddr_len = sizeof(inaddr);
+		//printf("in_addr %d %d, in_addr_len %d\n",inaddr.sin_addr,inaddr.sin_port,inaddr_len);
+		n = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *) &inaddr, &inaddr_len);
+		log_s("Connect.\n");
 		if (n < 1) continue;
 
 		// clear Additional section, becouse of EDNS: OPTION-CODE=000A add random bytes to the end of the question
@@ -79,6 +84,7 @@ void loop(int sockfd)
 			while (++ck < 13)
 			{
 				pow = 1; for (i=0; i<ck; i++) pow <<= 1;
+				//printf("Sleep: %d\n",pow);
 				usleep(pow * 1000);
 				n = recvfrom(out_socket, buf, sizeof(buf), MSG_DONTWAIT, (struct sockaddr *) &out_addr, &out_addr_len);
 				if (n < 0) continue;
@@ -97,12 +103,13 @@ void loop(int sockfd)
 		// send answer back
 		if (ans)
 		{
-			n = sendto(sockfd, ans, n, 0, (struct sockaddr *) &in_addr, in_addr_len);
+			n = sendto(sockfd, ans, n, 0, (struct sockaddr *) &inaddr, inaddr_len);
 			if (n < 0) log_s("ERROR in sendto back");
 		}
 	}
 }
 
+#ifdef NETDB
 #include <netdb.h>
 int hostname_to_ip(char *hostname, char *ip, int len)
 {
@@ -133,22 +140,30 @@ int hostname_to_ip(char *hostname, char *ip, int len)
 	freeaddrinfo(servinfo);
 	return 1;
 }
+#endif
 
 int server_init()
 {
 	int sock;
 
+#ifdef NETDB
 	// convert domain to IP
 	char buf[0xFF];
 	if (hostname_to_ip(config.server_ip, buf, sizeof(buf)))
 		config.server_ip = buf;
+#endif
 
+#ifdef IPV6
 	// is ipv6?
 	int is_ipv6 = 0, i = 0;
 	while (config.server_ip[i]) if (config.server_ip[i++] == ':') { is_ipv6 = 1; break; }
 
 	// create socket
 	sock = socket(is_ipv6 ? AF_INET6 : AF_INET, SOCK_DGRAM, 0);
+#else
+	sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+#endif
+
 	if (sock < 0) error("ERROR opening socket");
 
 	/* setsockopt: Handy debugging trick that lets
@@ -179,6 +194,7 @@ int server_init()
 		serveraddr.sin_family = AF_INET;
 		serveraddr.sin_port   = htons(config.server_port);
 		inet_aton(config.server_ip, (struct in_addr *)&serveraddr.sin_addr.s_addr);
+		printf("s_addr: %d  sin_port: %d\n", serveraddr.sin_addr.s_addr, serveraddr.sin_port);
 		printf("bind on %s:%d; parent: %s:%d\n", config.server_ip, config.server_port,config.dns,config.dns_port);
 		if (bind(sock, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
 			error("ERROR on binding ipv4");
@@ -195,11 +211,11 @@ int main(int argc, char **argv)
 {
 	if (argv[1] && 0 == strcmp(argv[1], "--version"))
 	{
-		printf("tinydns %s\nAuthor: CupIvan <mail@cupivan.ru>\nLicense: MIT\n", version);
+		printf("tinydns " version "\nAuthor: CupIvan <mail@cupivan.ru>\nLicense: MIT\n" );
 		exit(0);
 	}
 
-	if (argv[1] && 0 == strcmp(argv[1], "--help"))
+	if (argv[1] && (  ( 0 == strcmp(argv[1], "--help") ) || ( argv[1][1] == 'h' ) ) )
 	{
 		help();
 		exit(0);

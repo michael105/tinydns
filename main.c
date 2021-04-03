@@ -18,8 +18,8 @@ void loop(int sockfd)
 
 	int                 inaddr_len;
 	struct sockaddr_in inaddr;
-	inaddr.sin_addr.s_addr=255;
-	inaddr.sin_port=255;
+	//inaddr.sin_addr.s_addr=255;
+	//inaddr.sin_port=255;
 	//struct sockaddr_in6 in_addr;
 
 	int                out_socket;

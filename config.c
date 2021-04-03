@@ -5,7 +5,6 @@ TConfig config = {"127.0.0.1", 53, "1.1.1.1", 53, 6*3600};
 
 char* config_param(char* s, void* res, unsigned int type)
 {
-		printf("cfg_param: %s\n",s);
 	char rr_buf[0xFFF] = {0};
 	THeader *rr = (THeader*)rr_buf; rr->QRCOUNT = htons(1);
 	char   *rr_ptr, *rr_dot;
@@ -81,7 +80,6 @@ char* config_param(char* s, void* res, unsigned int type)
 void config_parse(char* s)
 {
 	char* ptr = s;
-	printf("cfg: %s\n",s);
 	while (*ptr)
 	{
 		if (memcmp(ptr, "server_ip",   9) == 0) ptr = config_param(ptr, &config.server_ip,  CONFIG_TYPE_STRING);
@@ -114,5 +112,4 @@ void config_load()
 	fclose(f);
 
 	config_parse(config.data);
-	printf("bind on %s:%d; parent: %s:%d\n", config.server_ip, config.server_port,config.dns,config.dns_port);
 }

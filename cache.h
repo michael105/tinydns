@@ -19,6 +19,6 @@ typedef struct TCacheItem
 
 int   cache_answer(void *_buf, uint16_t n);
 void* cache_question(void *buf, uint16_t n);
-void* cache_search(void *_buf, uint16_t *n);
+void* cache_search(void *_buf, int16_t *n);
 
 #endif

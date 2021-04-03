@@ -16,3 +16,14 @@ This is a tiny DNS server with simple JSON config written in C.
 * for compile just run `make`
 * after install you need to write your IP address in `/etc/tinydns.conf`
 * you may also use `systemctl` for start and stop service
+
+
+## Changes in the fork
+
+IPV6 is optional
+Compiles with minilib to 8.6kB linked statically
+Ports are configurable
+
+misc 2021
+
+

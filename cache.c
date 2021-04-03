@@ -77,7 +77,7 @@ int cache_answer(void *_buf, uint16_t n)
 	return 0;
 }
 
-void* cache_search(void *_buf, uint16_t *n)
+void* cache_search(void *_buf, int16_t *n)
 {
 	uint16_t *buf = (uint16_t*)_buf;
 	struct TCacheItem *ptr      = cache;

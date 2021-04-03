@@ -194,7 +194,6 @@ int server_init()
 		serveraddr.sin_family = AF_INET;
 		serveraddr.sin_port   = htons(config.server_port);
 		inet_aton(config.server_ip, (struct in_addr *)&serveraddr.sin_addr.s_addr);
-		printf("s_addr: %d  sin_port: %d\n", serveraddr.sin_addr.s_addr, serveraddr.sin_port);
 		printf("bind on %s:%d; parent: %s:%d\n", config.server_ip, config.server_port,config.dns,config.dns_port);
 		if (bind(sock, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
 			error("ERROR on binding ipv4");

@@ -1,0 +1,14 @@
+gcc --version
+
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-unknown-linux-uclibc/9.3.0/lto-wrapper
+Target: x86_64-unknown-linux-uclibc
+Configured with: /tmp/portage/sys-devel/gcc-9.3.0-r2/work/gcc-9.3.0/configure --host=x86_64-unknown-linux-uclibc --build=x86_64-unknown-linux-uclibc --prefix=/usr --bindir=/usr/x86_64-unknown-linux-uclibc/gcc-bin/9.3.0 --includedir=/usr/lib/gcc/x86_64-unknown-linux-uclibc/9.3.0/include --datadir=/usr/share/gcc-data/x86_64-unknown-linux-uclibc/9.3.0 --mandir=/usr/share/gcc-data/x86_64-unknown-linux-uclibc/9.3.0/man --infodir=/usr/share/gcc-data/x86_64-unknown-linux-uclibc/9.3.0/info --with-gxx-include-dir=/usr/lib/gcc/x86_64-unknown-linux-uclibc/9.3.0/include/g++-v9 --with-python-dir=/share/gcc-data/x86_64-unknown-linux-uclibc/9.3.0/python --enable-objc-gc --enable-languages=c,c++,objc,obj-c++,fortran --enable-obsolete --enable-secureplt --disable-werror --with-system-zlib --disable-nls --enable-checking=release --with-bugurl=https://bugs.gentoo.org/ --with-pkgversion='Gentoo 9.3.0-r2' --disable-esp --enable-libstdcxx-time --enable-shared --enable-threads=posix --disable-__cxa_atexit --enable-tls --disable-multilib --with-multilib-list=m64 --disable-fixed-point --enable-targets=all --enable-libgomp --disable-libssp --disable-libada --disable-systemtap --enable-vtable-verify --enable-lto --without-isl --disable-libsanitizer --enable-default-pie --enable-default-ssp
+Thread model: posix
+gcc version 9.3.0 (Gentoo 9.3.0-r2) 
+
+
+mini-gcc --version
+
+minilib: version "GIT 2021-04-02 16:36:52"

@@ -20,9 +20,10 @@ This is a tiny DNS server with simple JSON config written in C.
 
 ## Changes in the fork
 
-IPV6 is optional
-Compiles with minilib to 8.6kB linked statically
-Ports are configurable
+   `IPV6 is optional
+   Compiles with minilib to 8.6kB linked statically
+   Ports are configurable`
+
 
 misc 2021
 

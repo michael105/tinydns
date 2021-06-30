@@ -7,19 +7,16 @@
 #define version "0.3.1"
 
 
-void error(char *msg) { log_s(msg); perror(msg); exit(1); }
 
 void loop(int sockfd)
 {
-	 int16_t  i, n;
+	int16_t  i, n;
 	uint16_t  id;
 	uint16_t *ans = NULL;
 	unsigned char buf[0xFFF];
 
 	int                 inaddr_len;
 	struct sockaddr_in inaddr;
-	//inaddr.sin_addr.s_addr=255;
-	//inaddr.sin_port=255;
 	//struct sockaddr_in6 in_addr;
 
 	int                out_socket;
@@ -40,7 +37,6 @@ void loop(int sockfd)
 		log_s("Listening\n");
 		// receive datagram
 		inaddr_len = sizeof(inaddr);
-		//printf("in_addr %d %d, in_addr_len %d\n",inaddr.sin_addr,inaddr.sin_port,inaddr_len);
 		n = recvfrom(sockfd, buf, sizeof(buf), 0, (struct sockaddr *) &inaddr, &inaddr_len);
 		log_s("Connect.\n");
 		if (n < 1) continue;
@@ -58,7 +54,8 @@ void loop(int sockfd)
 		// also clear Z: it's strange, but dig util set it in 0x02
 		ptr->Z = 0;
 
-		parse_buf((THeader*)buf);
+		// logs the domain
+		//parse_buf((THeader*)buf);
 
 		id = *((uint16_t*)buf);
 
@@ -131,11 +128,11 @@ int hostname_to_ip(char *hostname, char *ip, int len)
 		}
 		else
 #endif
-		if (p->ai_family == AF_INET)
-		{
-			struct sockaddr_in *serveraddr = (struct sockaddr_in *)p->ai_addr;
-			inet_ntop(AF_INET, (struct in_addr *)&serveraddr->sin_addr, ip, len);
-		}
+			if (p->ai_family == AF_INET)
+			{
+				struct sockaddr_in *serveraddr = (struct sockaddr_in *)p->ai_addr;
+				inet_ntop(AF_INET, (struct in_addr *)&serveraddr->sin_addr, ip, len);
+			}
 	}
 	freeaddrinfo(servinfo);
 	return 1;
@@ -167,10 +164,10 @@ int server_init()
 	if (sock < 0) error("ERROR opening socket");
 
 	/* setsockopt: Handy debugging trick that lets
-	* us rerun the server immediately after we kill it;
-	* otherwise we have to wait about 20 secs.
-	* Eliminates "ERROR on binding: Address already in use" error.
-	*/
+	 * us rerun the server immediately after we kill it;
+	 * otherwise we have to wait about 20 secs.
+	 * Eliminates "ERROR on binding: Address already in use" error.
+	 */
 	int optval = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(optval));
 
@@ -208,30 +205,32 @@ int server_init()
 
 int main(int argc, char **argv)
 {
-	if (argv[1] && 0 == strcmp(argv[1], "--version"))
-	{
-		printf("tinydns " version "\nAuthor: CupIvan <mail@cupivan.ru>\nLicense: MIT\n" );
-		exit(0);
-	}
-
-	if (argv[1] && (  ( 0 == strcmp(argv[1], "--help") ) || ( argv[1][1] == 'h' ) ) )
-	{
-		help();
-		exit(0);
-	}
-
-	if (argv[1] && 0 == strcmp(argv[1], "-d"))
-	{
-		pid_t pid = fork();
-		if (pid < 0)
-		{
-			if (pid < 0) error("Can't create daemon!");
-			exit(1);
+	for ( *argv++; *argv && argv[0][0]=='-'; *argv++ ){
+		for ( char *c = argv[0]+1; *c != 0; c++ ){
+			switch ( *c ){
+				case 'v': 
+					writes("tinydns " version "\nAuthor: CupIvan <mail@cupivan.ru>\nLicense: MIT\n" );
+					exit(0);
+				case 'd':{
+								pid_t pid = fork();
+								if (pid < 0)
+								{
+									if (pid < 0) error("Can't create daemon!");
+									exit(1);
+								}
+								if (pid > 0) exit(0); // exit from current process 
+							};
+							break;
+				case 'D':
+							config.debug_level = 1;
+							break;
+				default:
+							help();
+			}
 		}
-		if (pid > 0) exit(0); // exit from current process
 	}
-	else
-		config.debug_level = 1;
+
+
 
 	config_load();
 

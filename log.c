@@ -1,9 +1,11 @@
 #include "common.h"
 
+
 void log_s(char *msg)
 {
 	if (!config.debug_level) return;
 	printf("%s\n", msg);
+	//printsl(msg);
 }
 
 void log_b(char *prefix, void *ptr, int n)

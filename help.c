@@ -2,8 +2,9 @@
 
 void help()
 {
-	printf("tinydns - small proxy DNS server.\n");
-	printf("  -d              Run as daemon.\n");
-	printf("  --version       Show program version.\n");
-	printf("  --help          Print this help.\n");
+writes("tinydns - small proxy DNS server.\n\
+  -d              Run as daemon.\n\
+	-D              show debug info\n\
+  -v              Show program version.\n\
+  -h              Print this help.\n");
 }

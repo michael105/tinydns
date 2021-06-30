@@ -18,11 +18,16 @@ This is a tiny DNS server with simple JSON config written in C.
 * you may also use `systemctl` for start and stop service
 
 
+(misc)
+
 ## Changes in the fork
 
     IPV6 is optional
     Compiles with minilib to 8.6kB linked statically
-    Ports are configurable
+    Ports are configurable 
+      (Useful for e.g. running tinydns as ordinary user -
+       Just redirect port 53 to e.g. 3053, and configure
+       tinydns to accept connections at this port)
 
 
 misc 2021

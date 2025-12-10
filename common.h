@@ -14,6 +14,9 @@
 
 //#define log_s(s) { if ( config.debug_level ) write(1,s,sizeof(s)); } 
 
+//#define DBG(...) printsl(__STRLINE__," "__VA_OPT__(,__VA_ARGS__))
+#define DBG(...) {}
+
 void error(char *msg) { log_s(msg); perror(msg); exit(1); }
 //#define error(msg) { log_s(msg); perror(msg); exit(1); }
 

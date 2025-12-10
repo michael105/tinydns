@@ -1,6 +1,12 @@
 #include "common.h"
 
-TConfig config = {"127.0.0.1", 53, "1.1.1.1", 53, 6*3600};
+TConfig config = {
+	.server_ip = "127.0.0.1", 
+	.server_port = 53, 
+	.dns = "1.1.1.1", 
+	.dns_port = 53, 
+	.cache_time = 6*3600
+};
 
 
 char* config_param(char* s, void* res, unsigned int type)
@@ -96,10 +102,19 @@ void config_parse(char* s)
 void config_load()
 {
 	FILE* f;
-	f = fopen("tinydns.conf", "rb");
-	if (!f)
-	f = fopen("/etc/tinydns.conf", "rb");
-	if (!f) return;
+	
+	if ( config.config_file ){
+		f = fopen(config.config_file, "rb");
+		if (!f){
+			printf("Cannot open config: %s\n", config.config_file );
+			exit ( ENOENT );
+		}
+	} else {
+		f = fopen("tinydns.conf", "rb");
+		if (!f)
+			f = fopen("/etc/tinydns.conf", "rb");
+		if (!f) return;
+	}
 
 	fseek(f, 0, SEEK_END);
 	int fsize = ftell(f);
@@ -113,3 +128,4 @@ void config_load()
 
 	config_parse(config.data);
 }
+

@@ -16,6 +16,7 @@ typedef struct TConfig
 	uint32_t cache_time;
 	uint8_t  debug_level;
 	char    *data;
+	char*   config_file;
 } TConfig;
 
 extern TConfig config;

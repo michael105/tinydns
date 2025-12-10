@@ -24,8 +24,11 @@ void* cache_question(void *buf, uint16_t n)
 	// search for star and calc part sizes
 	char *star_ptr;
 	star_ptr = (char*)ptr->que + sizeof(THeader);
+
+	DBG("c:1\n");
 	while (*star_ptr)
 	{
+		DBG("x\n");
 		if (star_ptr[0] == 1 && star_ptr[1] == '*')
 		{
 			ptr->star_q_n1 = star_ptr - (char*)ptr->que;
@@ -84,56 +87,53 @@ void* cache_search(void *_buf, int16_t *n)
 	struct TCacheItem *ptr_prev = NULL;
 	struct TCacheItem *ptr_tmp  = NULL;
 	uint32_t time = getTimestamp();
-	while (ptr)
-	{
+	while (ptr) {
+		DBG();
 		if (config.cache_time)
-		if (time - ptr->timestamp > config.cache_time)
-		{
-			ptr_tmp = ptr->next;
-			if (ptr_prev == NULL)
-			{
-				cache = ptr->next;
-				if (ptr->ans) free(ptr->ans);
-				free(ptr);
+			if (time - ptr->timestamp > config.cache_time) {
+				ptr_tmp = ptr->next;
+				if (ptr_prev == NULL) {
+					cache = ptr->next;
+					if (ptr->ans) free(ptr->ans);
+					free(ptr);
+				} else {
+					ptr_prev->next = ptr->next;
+					if (ptr->ans) free(ptr->ans);
+					free(ptr);
+				}
+				ptr = ptr_tmp;
+				continue;
+			}
+
+		DBG();
+		if (ptr->ans){
+			if (ptr->star_q_n1 > 0) {
+				int16_t mid_sz = *n - ptr->star_q_n1 - ptr->star_q_n2; // size of middle
+				if (mid_sz > 0)
+					if (memcmp(&buf[1], &ptr->que[1], ptr->star_q_n1 - 2) == 0) // left part
+					if (memcmp((char*)buf      + *n         - ptr->star_q_n2,
+								(char*)ptr->que + ptr->n_que - ptr->star_q_n2, ptr->star_q_n2) == 0) // right part
+					{
+						*n = ptr->star_a_n1 + mid_sz + ptr->star_a_n2;
+						char *p = (char*)ptr->ans;
+						p += ptr->star_a_n1; // skip left part
+													// fill subdomain
+						memcpy(p, (char*)buf + ptr->star_q_n1, mid_sz); p += mid_sz;
+						// fill right part
+						memcpy(p, ptr->ans_right, ptr->star_a_n2);
+						return ptr->ans;
+					}
 			}
 			else
-			{
-				ptr_prev->next = ptr->next;
-				if (ptr->ans) free(ptr->ans);
-				free(ptr);
-			}
-			ptr = ptr_tmp;
-			continue;
+				if (memcmp(&buf[1], &ptr->que[1], *n - 2) == 0)
+				{
+					*n = ptr->n_ans;
+					return ptr->ans;
+				}
 		}
-
-		if (ptr->ans){
-		if (ptr->star_q_n1 > 0)
-		{
-			int16_t mid_sz = *n - ptr->star_q_n1 - ptr->star_q_n2; // size of middle
-			if (mid_sz > 0)
-			if (memcmp(&buf[1], &ptr->que[1], ptr->star_q_n1 - 2) == 0) // left part
-			if (memcmp((char*)buf      + *n         - ptr->star_q_n2,
-			           (char*)ptr->que + ptr->n_que - ptr->star_q_n2, ptr->star_q_n2) == 0) // right part
-			{
-				*n = ptr->star_a_n1 + mid_sz + ptr->star_a_n2;
-				char *p = (char*)ptr->ans;
-				p += ptr->star_a_n1; // skip left part
-				// fill subdomain
-				memcpy(p, (char*)buf + ptr->star_q_n1, mid_sz); p += mid_sz;
-				// fill right part
-				memcpy(p, ptr->ans_right, ptr->star_a_n2);
-				return ptr->ans;
-			}
-		}
-		else
-		if (memcmp(&buf[1], &ptr->que[1], *n - 2) == 0)
-		{
-			*n = ptr->n_ans;
-			return ptr->ans;
-		}
-		ptr_prev = ptr;
-		ptr = ptr->next;
-		}
+			ptr_prev = ptr;
+			ptr = ptr->next;
+		DBG();
 	}
 	return NULL;
 }

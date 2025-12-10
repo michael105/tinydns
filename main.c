@@ -15,12 +15,12 @@ void loop(int sockfd)
 	uint16_t *ans = NULL;
 	unsigned char buf[0xFFF];
 
-	int                 inaddr_len;
+	socklen_t                 inaddr_len;
 	struct sockaddr_in inaddr;
 	//struct sockaddr_in6 in_addr;
 
 	int                out_socket;
-	int                out_addr_len;
+	socklen_t                out_addr_len;
 	struct sockaddr_in out_addr;
 
 	memset((char *) &out_addr, 0, sizeof(out_addr));
@@ -59,7 +59,9 @@ void loop(int sockfd)
 
 		id = *((uint16_t*)buf);
 
+		DBG("a:0\n");
 		log_b("Q-->", buf, n);
+		DBG("a:01\n");
 
 		if ( (ans = (uint16_t *)cache_search(buf, &n)) )
 		{
@@ -68,6 +70,7 @@ void loop(int sockfd)
 		}
 		else
 			cache_question(buf, n);
+		DBG("a:1\n");
 
 		// resend to parent
 		if (!ans)
@@ -81,7 +84,7 @@ void loop(int sockfd)
 			while (++ck < 13)
 			{
 				pow = 1; for (i=0; i<ck; i++) pow <<= 1;
-				//printf("Sleep: %d\n",pow);
+				printf("Sleep: %d\n",pow);
 				usleep(pow * 1000);
 				n = recvfrom(out_socket, buf, sizeof(buf), MSG_DONTWAIT, (struct sockaddr *) &out_addr, &out_addr_len);
 				if (n < 0) continue;
@@ -97,6 +100,7 @@ void loop(int sockfd)
 			if (!ck) log_s("<--P no answer");
 		}
 
+		DBG("a:2\n");
 		// send answer back
 		if (ans)
 		{
@@ -223,6 +227,12 @@ int main(int argc, char **argv)
 							break;
 				case 'D':
 							config.debug_level = 1;
+							break;
+				case 'c':
+							*argv++;
+							if ( !*argv )
+								help();
+							config.config_file = *argv;
 							break;
 				default:
 							help();

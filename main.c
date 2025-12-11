@@ -28,6 +28,7 @@ void loop(int sockfd)
 	out_addr.sin_port   = htons(config.dns_port);
 	inet_aton(config.dns, (struct in_addr *)&out_addr.sin_addr.s_addr);
 	out_socket = socket(AF_INET, SOCK_DGRAM, 0);
+	//out_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (out_socket < 0) error("ERROR opening socket out");
 
 	while (1)
@@ -76,7 +77,9 @@ void loop(int sockfd)
 		if (!ans)
 		{
 			out_addr_len = sizeof(out_addr);
+			DBG("sendto");
 			n = sendto(out_socket, buf, n, 0, (struct sockaddr *) &out_addr,  out_addr_len);
+			printf("n: %d\n",n);
 			if (n < 0) { log_s("ERROR in sendto");  }
 
 			int ck = 0;

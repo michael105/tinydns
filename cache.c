@@ -90,17 +90,18 @@ void* cache_search(void *_buf, int16_t *n)
 	while (ptr) {
 		DBG();
 		if (config.cache_time)
+			// too old, free
 			if (time - ptr->timestamp > config.cache_time) {
 				ptr_tmp = ptr->next;
 				if (ptr_prev == NULL) {
 					cache = ptr->next;
-					if (ptr->ans) free(ptr->ans);
-					free(ptr);
 				} else {
 					ptr_prev->next = ptr->next;
-					if (ptr->ans) free(ptr->ans);
-					free(ptr);
 				}
+
+				if (ptr->ans) free(ptr->ans);
+				free(ptr);
+
 				ptr = ptr_tmp;
 				continue;
 			}
